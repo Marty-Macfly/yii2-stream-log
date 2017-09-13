@@ -1,6 +1,6 @@
 {
 	"name": "macfly/yii2-stream-log",
-	"description": "Yii2 module, provide a cli to send log to elasticsearch use redis as a local buffer",
+	"description": "Yii2 module, provide a cli to send log to elasticsearch asynchronously use redis as a local buffer",
 	"keywords": ["yii2", "cli", "log", "redis", "elasticsearch"],
 	"type": "yii2-extension",
 	"license": "BSD-3-Clause",

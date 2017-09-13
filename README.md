@@ -1,7 +1,7 @@
-# yii2-rbac-cli
+# yii2-stream-log
 
 
-Yii2 User and Rbac provider from another Yii2 instance for sso or cenralized way to manage user and role.
+Yii2 module, provide a cli to send log to elasticsearch asynchronously use redis as a local buffer
 
 Installation
 ------------
@@ -11,13 +11,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```sh
-php composer.phar require --prefer-dist "macfly/yii2-rbac-cli" "*"
+php composer.phar require --prefer-dist "macfly/yii2-stream-log" "*"
 ```
 
 or add
 
 ```json
-"macfly/yii2-rbac-cli": "*"
+"macfly/yii2-stream-log": "*"
 ```
 
 to the require section of your `composer.json` file.
@@ -25,13 +25,43 @@ to the require section of your `composer.json` file.
 Configure
 ------------
 
-Configure **config/console.php** as follows
+Configure **config/console.php** and **config/web.php** as follows
 
 ```php
+  'bootstrap' => [
+      'log',
+      'streamlog',
+  ],
   'modules' => [
      ................
-    'rbac'  => [
-      'class'       => 'macfly\rbac\Module',
+     'streamlog' => [
+         'class'     => 'macfly\streamlog\Module',
+         'redis'     => [
+             'hostname'  => REDIS_HOST,
+             'port'      => REDIS_PORT,
+             'database'  => REDIS_LOG_DB,
+         ],
+         'redisTarget'    => [
+             'exportInterval' => 1,
+             'logVars'        => [],
+             'logUser'        => true,
+             'logApp'         => true,
+             'logTracker'     => true,
+             'logUserIp'      => true,
+             'logSession'     => true,
+         ],
+         'elasticsearchTarget' => [
+            'db' => [
+                'class'             => 'yii\elasticsearch\Connection',
+                'autodetectCluster' => false,
+                'defaultProtocol'   => 'https',
+                'nodes'             => [
+                    [
+                        'http_address' => 'inet[/' . ELASTICSEARCH_HOST . ':' . ELASTICSEARCH_PORT . ']',
+                    ],
+                ],
+            ],
+        ],
     ],
     ................
   ],
@@ -40,62 +70,8 @@ Configure **config/console.php** as follows
 Usage
 ------------
 
-# Import static role and permission list
-
-Create a yaml file with le list of static role and permission you want to create
-
-```yaml
-# Permission section
-permissions:
-  list:
-    desc: List user
-  create:
-    desc: Create user
-  update:
-    desc: Edit user
-  profile:
-    desc: Edit user profile
-  delete:
-    desc: Remove user
-
-# Role section
-roles:
-  view:
-    desc: View users
-    children:
-    - list
-    - info
-  admin:
-    desc: Administration
-    children:
-    - view
-    
-# Assign permission and roles to a specific userid
-assign:
-  1:
-  - admin
-  - oauth.admin
-  2:
-  - user.info
-```
-
-After run the @rbac/yaml@ with the path to your yaml file
+Run the following to enable log streaming from redis to elasticsearch
 
 ```sh
-php yii rbac/load/yaml /tmp/role.yml
-```
-
-# Add role or permission to a specific user
-
-You can add some role and permission from the cli to a specific user id.
-
-```sh
-php yii rbac/load/add userid permissionOrRoleName
-```
-
-For example to add role 'view' to user with id '1' :
-
-
-```sh
-php yii rbac/load/add 1 view
+php yii streamlog/sender/start
 ```
