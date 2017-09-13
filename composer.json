@@ -1,0 +1,28 @@
+{
+	"name": "macfly/yii2-stream-log",
+	"description": "Yii2 module, provide a cli to send log to elasticsearch use redis as a local buffer",
+	"keywords": ["yii2", "cli", "log", "redis", "elasticsearch"],
+	"type": "yii2-extension",
+	"license": "BSD-3-Clause",
+	"support": {
+		"issues": "https://github.com/Marty-Macfly/yii2-stream-log/issues",
+		"source": "https://github.com/Marty-Macfly/yii2-stream-log"
+	},
+	"authors": [
+		{
+			"name": "Charles DELFLY",
+			"email": "c.delfly@linkbynet.com"
+		}
+	],
+	"minimum-stability": "stable",
+	"require": {
+		"yiisoft/yii2": "~2.0.5",
+		"yiisoft/yii2-redis": "^2.0",
+		"yiisoft/yii2-elasticsearch": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"macfly\\streamlog\\": "src/"
+		}
+	}
+}
