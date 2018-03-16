@@ -7,6 +7,7 @@ use yii\base\InvalidConfigException;
 use yii\helpers\Json;
 use yii\redis\Connection;
 use yii\di\Instance;
+use yii\helpers\ArrayHelper;
 
 // class RedisTarget extends \index0h\log\RedisTarget
 class RedisTarget extends \yii\log\Target
@@ -19,6 +20,8 @@ class RedisTarget extends \yii\log\Target
     public $redis      = null;
     /** @var string Redis list key. */
     public $key        = 'logs';
+    /** @var string Attribute to detect username from current user identity. */
+    public $userNameAt = null;
     /** @var bool Whether to log a message containing the current user name and ID. */
     public $logUser    = false;
     /** @var bool Whether to log a message containing the app name. */
@@ -47,8 +50,11 @@ class RedisTarget extends \yii\log\Target
         if ($this->logUser === true) {
             /* @var $user \yii\web\User */
             $user    = Yii::$app->has('user', true) ? Yii::$app->get('user') : null;
-            if ($user && ($identity = $user->getIdentity(false))) {
-                $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? $identity->getId() : '-';
+            if($this->userNameAt && $user && ($identity = $user->getIdentity(false))){
+              $context['user'] = (($identity = $user->getIdentity(false)) && $identity->canGetProperty($this->userNameAt)) ? ArrayHelper::getValue($identity,$this->userNameAt) : $identity->getId();
+            }
+            elseif($user && ($identity = $user->getIdentity(false))){
+              $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? $identity->getId() : '-';
             }
         }
 
