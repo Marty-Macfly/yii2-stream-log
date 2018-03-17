@@ -51,7 +51,7 @@ class RedisTarget extends \yii\log\Target
             /* @var $user \yii\web\User */
             $user    = Yii::$app->has('user', true) ? Yii::$app->get('user') : null;
             if($this->userNameAt && $user && ($identity = $user->getIdentity(false))){
-              $context['user'] = (($identity = $user->getIdentity(false)) && $identity->canGetProperty($this->userNameAt)) ? ArrayHelper::getValue($identity,$this->userNameAt) : $identity->getId();
+              $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? ($identity->canGetProperty($this->userNameAt) ? ArrayHelper::getValue($identity,$this->userNameAt) : $identity->getId()) : '-';
             }
             elseif($user && ($identity = $user->getIdentity(false))){
               $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? $identity->getId() : '-';
