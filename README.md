@@ -49,6 +49,7 @@ Configure **config/console.php** and **config/web.php** as follows
              'logTracker'     => true,
              'logUserIp'      => true,
              'logSession'     => true,
+             'userNameAt'     => 'username',
          ],
          'elasticsearchTarget' => [
             'db' => [
