@@ -17,27 +17,28 @@ class RedisTarget extends \yii\log\Target
      * This can also be an array that is used to create a redis [[Connection]] instance in case you do not want do configure
      * redis connection as an application component.
      */
-    public $redis      = null;
+    public $redis = 'redis';
     /** @var string Redis list key. */
-    public $key        = 'logs';
+    public $key = 'logs';
     /** @var string Attribute to detect username from current user identity. */
     public $userNameAt = null;
     /** @var bool Whether to log a message containing the current user name and ID. */
-    public $logUser    = false;
+    public $logUser = false;
     /** @var bool Whether to log a message containing the app name. */
-    public $logApp     = false;
+    public $logApp = false;
     /** @var bool Whether to log a message containing the request id from tacker component. */
     public $logTracker = false;
     /** @var bool Whether to log a message containing the current session ID. */
-    public $logUserIp  = false;
+    public $logUserIp = false;
     /** @var bool Whether to log a message containing the current session ID. */
     public $logSession = false;
 
-    /** @inheritdoc */
-    public function init()
+    /**
+     * Initializes the redis Connection component.
+     */
+    public function getRedis()
     {
-        parent::init();
-        $this->redis = Instance::ensure($this->redis, Connection::className());
+        return Instance::ensure($this->redis, Connection::class);
     }
 
     /**
@@ -50,11 +51,10 @@ class RedisTarget extends \yii\log\Target
         if ($this->logUser === true) {
             /* @var $user \yii\web\User */
             $user    = Yii::$app->has('user', true) ? Yii::$app->get('user') : null;
-            if($this->userNameAt && $user && ($identity = $user->getIdentity(false))){
-              $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? ($identity->canGetProperty($this->userNameAt) ? ArrayHelper::getValue($identity,$this->userNameAt) : $identity->getId()) : '-';
-            }
-            elseif($user && ($identity = $user->getIdentity(false))){
-              $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? $identity->getId() : '-';
+            if ($this->userNameAt && $user && ($identity = $user->getIdentity(false))) {
+                $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? ($identity->canGetProperty($this->userNameAt) ? ArrayHelper::getValue($identity, $this->userNameAt) : $identity->getId()) : '-';
+            } elseif ($user && ($identity = $user->getIdentity(false))) {
+                $context['user'] = ($user && ($identity = $user->getIdentity(false))) ? $identity->getId() : '-';
             }
         }
 
@@ -85,7 +85,7 @@ class RedisTarget extends \yii\log\Target
      */
     public function export()
     {
-        $this->redis->lpush($this->key, Json::encode([
+        $this->getRedis()->lpush($this->key, Json::encode([
             $this->getExtraContextMessage(),
             $this->messages,
         ]));

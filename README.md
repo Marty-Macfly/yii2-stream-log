@@ -35,13 +35,8 @@ Configure **config/console.php** and **config/web.php** as follows
   'modules' => [
      ................
      'streamlog' => [
-         'class'     => 'macfly\streamlog\Module',
-         'redis'     => [
-             'hostname'  => REDIS_HOST,
-             'port'      => REDIS_PORT,
-             'database'  => REDIS_LOG_DB,
-         ],
-         'redisTarget'    => [
+         'class' => 'macfly\streamlog\Module',
+         'redisTarget' => [
              'exportInterval' => 1,
              'logVars'        => [],
              'logUser'        => true,

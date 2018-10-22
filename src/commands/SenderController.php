@@ -3,36 +3,47 @@ namespace macfly\streamlog\commands;
 
 use Yii;
 use yii\console\Controller;
+use yii\console\ExitCode;
 use yii\helpers\Json;
-
-use macfly\streamlog\Module;
-use macfly\streamlog\ElasticsearchTarget;
 
 class SenderController extends Controller
 {
     public function actionStart()
     {
-        $module = Module::getInstance();
+        $target = $this->module->getElasticsearchTarget();
 
-        if (!isset($module->elasticsearchTarget['class'])) {
-            $module->elasticsearchTarget['class'] = ElasticsearchTarget::className();
-        }
-
-        $target = Yii::createObject($module->elasticsearchTarget);
-
-        while ($rslt = $module->pop()) {
+        while ($rslt = $this->pop()) {
             list($context, $messages) = Json::decode($rslt);
             do {
                 try {
-                    printf("Flushing logs to elasticsearch%s", PHP_EOL);
+                    $this->stdout("Flushing logs to elasticsearch" . PHP_EOL);
                     $target->setContextMessage($context);
                     $target->messages = $messages;
                     $target->export();
                     break;
                 } catch (\Exception $error) { // Retry on error
-                    printf("Try again: %s%s", $error, PHP_EOL);
+                    $this->stdout(sprintf("Try again: %s%s", $error, PHP_EOL));
                 }
             } while (true);
+        }
+
+        ExitCode::OK;
+    }
+
+    protected function pop()
+    {
+        $redis = $this->module->redisTarget->getRedis();
+        $wait = 0.1;
+        $max_wait = 2;
+        $tries = 0;
+        while (true) {
+            if (($rslt = $redis->executeCommand('LPOP', [$this->redisTarget->key])) !== null) {
+                return $rslt;
+            }
+
+            $tries++;
+            sleep($wait);
+            $wait = min($max_wait, $tries/10 + $wait);
         }
     }
 }
