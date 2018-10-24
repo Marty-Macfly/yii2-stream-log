@@ -10,7 +10,7 @@ use yii\log\Dispatcher;
 class Module extends \yii\base\Module implements BootstrapInterface
 {
     /** @var array elasticsearchTarget configuration. */
-    public $elasticsearchTarget = null;
+    public $elasticsearchTarget = [];
     /** @var array redisTarget configuration. */
     public $redisTarget = null;
 

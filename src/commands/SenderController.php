@@ -37,7 +37,7 @@ class SenderController extends Controller
         $max_wait = 2;
         $tries = 0;
         while (true) {
-            if (($rslt = $redis->executeCommand('LPOP', [$this->redisTarget->key])) !== null) {
+            if (($rslt = $redis->executeCommand('LPOP', [$this->module->redisTarget->key])) !== null) {
                 return $rslt;
             }
 
