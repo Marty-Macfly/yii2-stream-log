@@ -47,16 +47,7 @@ Configure **config/console.php** and **config/web.php** as follows
              'userNameAt'     => 'username',
          ],
          'elasticsearchTarget' => [
-            'db' => [
-                'class'             => 'yii\elasticsearch\Connection',
-                'autodetectCluster' => false,
-                'defaultProtocol'   => 'https',
-                'nodes'             => [
-                    [
-                        'http_address' => 'inet[/' . ELASTICSEARCH_HOST . ':' . ELASTICSEARCH_PORT . ']',
-                    ],
-                ],
-            ],
+            'indexDateFormat' => 'y-MM-dd', // Set date to append to index, will be yii-2018-10-24
         ],
     ],
     ................
