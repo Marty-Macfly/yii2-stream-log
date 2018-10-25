@@ -92,7 +92,7 @@ class RedisTarget extends \yii\log\Target
             ]);
             $this->getRedis()->lpush($this->key, $json);
         } catch (InvalidArgumentException $e) {
-            Yii::error("Unable to encode in JSON: " . $e->message);
+            Yii::error("Unable to encode in JSON: " . $e->getMessage());
         }
     }
 }
