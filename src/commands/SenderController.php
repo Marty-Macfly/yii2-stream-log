@@ -19,6 +19,7 @@ class SenderController extends Controller
                     $this->stdout("Flushing logs to elasticsearch" . PHP_EOL);
                     $target->setContextMessage($context);
                     $target->messages = $messages;
+                    $this->stdout("Flushing " . count($messages) . " line of logs to elasticsearch" . PHP_EOL);
                     $target->export();
                     break;
                 } catch (\Exception $error) { // Retry on error
