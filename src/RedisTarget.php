@@ -3,7 +3,7 @@
 namespace macfly\streamlog;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\base\InvalidArgumentException;
 use yii\helpers\Json;
 use yii\redis\Connection;
 use yii\di\Instance;
@@ -85,9 +85,14 @@ class RedisTarget extends \yii\log\Target
      */
     public function export()
     {
-        $this->getRedis()->lpush($this->key, Json::encode([
-            $this->getExtraContextMessage(),
-            $this->messages,
-        ]));
+        try {
+            $json = Json::encode([
+                $this->getExtraContextMessage(),
+                $this->messages,
+            ]);
+            $this->getRedis()->lpush($this->key, $json);
+        } catch (InvalidArgumentException $e) {
+            Yii::error("Unable to encode in JSON: " . $e->message);
+        }
     }
 }
