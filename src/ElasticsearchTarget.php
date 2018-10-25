@@ -3,6 +3,7 @@
 namespace macfly\streamlog;
 
 use Yii;
+use yii\helpers\Json;
 
 class ElasticsearchTarget extends \yii\elasticsearch\ElasticsearchTarget
 {
