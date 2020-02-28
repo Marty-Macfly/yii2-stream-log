@@ -1,6 +1,7 @@
 <?php
 namespace macfly\streamlog\commands;
 
+use Exception;
 use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
@@ -34,17 +35,17 @@ class SenderController extends Controller
     protected function pop()
     {
         $redis = $this->module->redisTarget->getRedis();
-        $wait = 0.1;
-        $max_wait = 2;
-        $tries = 0;
         while (true) {
-            if (($rslt = $redis->executeCommand('LPOP', [$this->module->redisTarget->key])) !== null) {
-                return $rslt;
+            try
+            {
+                if (($rslt = $redis->blpop([$this->module->redisTarget->key], 0)) !== null) {
+                    return $rslt;
+                }
             }
-
-            $tries++;
-            sleep($wait);
-            $wait = min($max_wait, $tries/10 + $wait);
+            catch (Exception $e)
+            {
+                Yii::error($e->getMessage());
+            }  
         }
     }
 }
