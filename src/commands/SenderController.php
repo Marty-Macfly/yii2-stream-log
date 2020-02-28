@@ -38,7 +38,7 @@ class SenderController extends Controller
         while (true) {
             try
             {
-                if (($rslt = $redis->blpop([$this->module->redisTarget->key], 0)) !== null) {
+                if (($rslt = $redis->blpop($this->module->redisTarget->key, 0)) !== null) {
                     return $rslt;
                 }
             }
