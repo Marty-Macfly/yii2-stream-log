@@ -18,7 +18,7 @@
 	"require": {
 		"yiisoft/yii2": "~2.0.5",
 		"yiisoft/yii2-redis": "^2.0",
-		"yiisoft/yii2-elasticsearch": "~2.1.0"
+		"yiisoft/yii2-elasticsearch": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
