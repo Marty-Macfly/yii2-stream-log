@@ -12,15 +12,13 @@ class SenderController extends Controller
     public function actionStart()
     {
         $target = $this->module->getElasticsearchTarget();
-
+        $this->stdout("Start flushing logs to elasticsearch" . PHP_EOL);
         while ($rslt = $this->pop()) {
             list($context, $messages) = Json::decode($rslt);
             do {
                 try {
-                    $this->stdout("Flushing logs to elasticsearch" . PHP_EOL);
                     $target->setContextMessage($context);
                     $target->messages = $messages;
-                    $this->stdout("Flushing " . count($messages) . " line(s) of logs to elasticsearch" . PHP_EOL);
                     $target->export();
                     break;
                 } catch (\Exception $error) { // Retry on error
@@ -28,7 +26,6 @@ class SenderController extends Controller
                 }
             } while (true);
         }
-
         ExitCode::OK;
     }
 
